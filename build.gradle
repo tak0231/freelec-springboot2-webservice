@@ -1,11 +1,31 @@
+/*
+
+# 그레이들
+- 그루비 기반의 "빌드 시스템" (빌드 툴)
+- Ant / Maven / Gradle 등이 많이 쓰이는 빌드 시스템
+- 빌드 스크립트 간단히 작성 가능
+- ant / 메이븐 -> xml 기반
+- 메이크 / 그레들 -> 스크립트 기반
+
+- 메이크 : 빌드 개념 확립
+- 앤트 : 범용성 높임 (= 크로스 플랫폼 대응)
+- 메이븐 : 빌드 스크립트 작성 효율 높임 (= 규칙 기반)
+- 그레들 : 유여성을 높임 (= 스크립트 언어로 회귀)
+*/
+
 buildscript {
+    // ext -> 전역변수 설정 (build.gradle 전역서 사용 가능)
     ext {
         springBootversion = '2.1.7.RELEASE'
     }
+    
+    // 각종 의존성(=라이브러리)들을 어떤 원격 저장소에서 받을지를 정함
     repositories {
         mavenCentral()
         jcenter()
     }
+    
+    // 스프링 부트 그레이들 플러그인의 해당 버전을 의존성으로 받아들이겠다는 뜻
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootversion}")
     }
@@ -23,9 +43,33 @@ sourceCompatibility = 11
 repositories {
     mavenCentral()
 }
+/*
+# Gradle 6이상부터
+- implementation
+- testImplementation
+- runtimeOnly
+- testRuntimeOnly
 
+# 위의 것들로 대체되어있음
+- compile
+- testCompile
+- runtime
+- testRuntime
+
+*/
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web:')
-    implementation('org.projectlombok:lombok');
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+    implementation('org.projectlombok:lombok')
+
+    // gradle 5 이후부터 lombok 사용하기 위해 추가 필요
+    annotationProcessor('org.projectlombok:lombok')
+
+    // 스프링 부트용 Spring Data Jpa 추상화(인터페이스) 라이브러리
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+
+    // 인메모리 관계형 데이터베이스
+    // = 메모리에서 실행됨 = 애플리케이션 재시작시 초기화 됨 = 주목적 : 테스트 용
+    // 별도 설치 필요 X -> 의존성만으로 관리 가능
+    implementation('com.h2database:h2')
 }
